@@ -13,11 +13,7 @@ fn main() {
         Err(e) => panic!("{}", e),
     };
     let list = scanner.scan();
-    let ip = match input.parse_ip() {
-        Ok(ip) => ip,
-        Err(e) => panic!("{}", e),
-    };
-    let output = Output::new(ip, list);
+    let output = Output::new(list);
 
     println!("{}", output);
 }

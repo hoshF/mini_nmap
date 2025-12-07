@@ -7,8 +7,8 @@ use std::{net::IpAddr, time::Duration};
 #[command(version, about, long_about = None)]
 pub struct Opts {
     /// Single ip address
-    #[arg(short, long)]
-    pub ip: String,
+    #[arg(short, long, value_delimiter = ',')]
+    pub ips: Vec<String>,
 
     /// range of ports. Example: 1-1024
     #[arg(short, long)]
@@ -21,16 +21,20 @@ pub struct Opts {
 
 impl Opts {
     pub fn trans(&self) -> Result<Scanner, String> {
-        let ip = self.parse_ip()?;
+        let ips = self.parse_ip()?;
         let (start_port, end_port) = self.parse_range()?;
         let timeout = self.parse_timeout();
-        Ok(Scanner::new(ip, start_port, end_port, timeout))
+        Ok(Scanner::new(ips, start_port, end_port, timeout))
     }
 
-    pub fn parse_ip(&self) -> Result<IpAddr, String> {
-        self.ip
-            .parse()
-            .map_err(|_| format!("{} not valid ip address", self.ip))
+    pub fn parse_ip(&self) -> Result<Vec<IpAddr>, String> {
+        self.ips
+            .iter()
+            .map(|ip| {
+                ip.parse()
+                    .map_err(|_| format!("'{}' is not a valid IP address", ip))
+            })
+            .collect()
     }
 
     fn parse_range(&self) -> Result<(u16, u16), String> {

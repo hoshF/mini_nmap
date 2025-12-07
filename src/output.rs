@@ -1,24 +1,33 @@
+use std::collections::HashMap;
 use std::fmt;
 use std::net::IpAddr;
 
 #[derive(Debug)]
 pub struct Output {
-    pub ip: IpAddr,
-    pub open_ports: Vec<u16>,
+    pub socket_list: HashMap<IpAddr, Vec<u16>>,
 }
 
 impl Output {
-    pub fn new(ip: IpAddr, open_ports: Vec<u16>) -> Self {
-        Self { ip, open_ports }
+    pub fn new(socket_list: HashMap<IpAddr, Vec<u16>>) -> Self {
+        Self { socket_list }
     }
 }
 
 impl fmt::Display for Output {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        if self.open_ports.is_empty() {
-            write!(f, "IP: {} - No open ports found", self.ip)
+        if self.socket_list.is_empty() {
+            write!(f, "No open ports found on any IP")
         } else {
-            write!(f, "IP: {} - Open ports: {:?}", self.ip, self.open_ports)
+            for (ip, ports) in &self.socket_list {
+                if ports.is_empty() {
+                    writeln!(f, "IP: {} - No open ports", ip)?;
+                } else {
+                    let mut sorted_ports = ports.clone();
+                    sorted_ports.sort();
+                    writeln!(f, "IP: {} - Open ports: {:?}", ip, sorted_ports)?;
+                }
+            }
+            Ok(())
         }
     }
 }
