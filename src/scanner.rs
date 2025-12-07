@@ -6,10 +6,10 @@ use std::{
 
 #[derive(Debug)]
 pub struct Scanner {
-    ip: IpAddr,
-    start_port: u16,
-    end_port: u16,
-    timeout: Duration,
+    pub ip: IpAddr,
+    pub start_port: u16,
+    pub end_port: u16,
+    pub timeout: Duration,
 }
 
 impl Scanner {
