@@ -51,7 +51,7 @@ impl Scanner {
             }
             Err(e) => {
                 if e.kind() != ErrorKind::ConnectionRefused {
-                    println!("Error: {}", e);
+                    println!("TCP Scan Error: {}", e);
                 }
                 false
             }

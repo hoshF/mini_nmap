@@ -1,17 +1,18 @@
 use clap::Parser;
 
+use crate::address::parse_addresses;
 use crate::scanner::Scanner;
-use std::{net::IpAddr, time::Duration};
+use std::time::Duration;
 
 #[derive(Parser, Debug)]
 #[command(version, about, long_about = None)]
 pub struct Opts {
     /// Single ip address
     #[arg(short, long, value_delimiter = ',')]
-    pub ips: Vec<String>,
+    pub addresses: Vec<String>,
 
     /// range of ports. Example: 1-1024
-    #[arg(short, long)]
+    #[arg(short, long, default_value = "1-30000")]
     pub range: String,
 
     /// The timeout in milliseconds before a port is assumed to be closed.
@@ -21,20 +22,10 @@ pub struct Opts {
 
 impl Opts {
     pub fn trans(&self) -> Result<Scanner, String> {
-        let ips = self.parse_ip()?;
+        let ips = parse_addresses(self);
         let (start_port, end_port) = self.parse_range()?;
         let timeout = self.parse_timeout();
         Ok(Scanner::new(ips, start_port, end_port, timeout))
-    }
-
-    pub fn parse_ip(&self) -> Result<Vec<IpAddr>, String> {
-        self.ips
-            .iter()
-            .map(|ip| {
-                ip.parse()
-                    .map_err(|_| format!("'{}' is not a valid IP address", ip))
-            })
-            .collect()
     }
 
     fn parse_range(&self) -> Result<(u16, u16), String> {

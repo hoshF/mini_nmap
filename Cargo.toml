@@ -4,9 +4,11 @@ version = "0.1.0"
 edition = "2024"
 
 [dependencies]
+cidr-utils = "0.6.1"
 clap = { version = "4.5.53", features = ["derive"] }
 hex = "0.4.3"
 hex_fmt = "0.3.0"
 itertools = "0.14.0"
+phf = { version = "0.13.1", features = ["macros"] }
 tun-tap = "0.1.4"
 

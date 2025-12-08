@@ -1,3 +1,4 @@
+use crate::service;
 use std::collections::HashMap;
 use std::fmt;
 use std::net::IpAddr;
@@ -24,7 +25,13 @@ impl fmt::Display for Output {
                 } else {
                     let mut sorted_ports = ports.clone();
                     sorted_ports.sort();
-                    writeln!(f, "IP: {} - Open ports: {:?}", ip, sorted_ports)?;
+                    writeln!(f, "\n{}:", ip)?;
+                    writeln!(f, "{:<10} {:<15}", "PORT", "SERVICE")?;
+
+                    for port in sorted_ports {
+                        let service = service::guess_service(port);
+                        writeln!(f, "{:<10} {:<15}", format!("{}/tcp", port), service)?;
+                    }
                 }
             }
             Ok(())
